@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no, orientation=any">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
   <title>Windows 11 Launcher</title>
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#0a0a1a">
@@ -25,19 +25,13 @@
       overflow: hidden;
       background: #0a0a1a;
       transition: background-image 0.2s ease;
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
     }
 
-    /* Desktop grid - responsive for all orientations */
+    /* Desktop grid */
     #desktop {
-      height: 100%;
+      height: calc(100vh - 70px);
       width: 100%;
       display: flex;
-      flex-direction: row;
       flex-wrap: wrap;
       padding: 20px 18px;
       gap: 12px;
@@ -45,30 +39,13 @@
       overflow-y: auto;
       overflow-x: hidden;
       scrollbar-width: thin;
-      padding-bottom: 80px;
     }
 
-    /* Portrait mode */
-    @media (orientation: portrait) {
-      #desktop {
-        padding: 20px 15px;
-        gap: 10px;
-      }
-      .app-icon {
-        width: 85px;
-        height: 100px;
-      }
-      .menu-grid {
-        grid-template-columns: repeat(4, 1fr);
-      }
-    }
-
-    /* Landscape mode - full support */
+    /* Landscape mode */
     @media (orientation: landscape) {
       #desktop {
         padding: 15px 25px;
         gap: 15px;
-        padding-bottom: 70px;
       }
       .app-icon {
         width: 90px;
@@ -78,60 +55,24 @@
         width: 48px;
         height: 48px;
       }
-      .emoji-icon {
-        font-size: 42px;
+      .menu-grid {
+        grid-template-columns: repeat(5, 1fr) !important;
       }
       #start-menu {
         max-width: 700px;
-        height: 450px;
-        bottom: -550px;
-      }
-      #start-menu.active {
-        bottom: 75px;
-      }
-      .menu-grid {
-        grid-template-columns: repeat(5, 1fr);
-        max-height: 310px;
-      }
-      #taskbar {
-        max-width: 90%;
-        height: 52px;
       }
     }
 
-    /* Small landscape devices */
-    @media (orientation: landscape) and (max-height: 450px) {
-      #start-menu {
-        height: 350px;
-        bottom: -450px;
-      }
-      #start-menu.active {
-        bottom: 65px;
-      }
+    /* Portrait mode */
+    @media (orientation: portrait) {
       .menu-grid {
-        max-height: 230px;
-      }
-      .app-icon {
-        width: 75px;
-        height: 85px;
-      }
-      .app-icon img {
-        width: 40px;
-        height: 40px;
+        grid-template-columns: repeat(4, 1fr);
       }
     }
 
-    /* Tablet landscape */
-    @media (min-width: 768px) and (orientation: landscape) {
-      .app-icon {
-        width: 105px;
-        height: 115px;
-      }
+    @media (max-width: 500px) and (orientation: portrait) {
       .menu-grid {
-        grid-template-columns: repeat(6, 1fr);
-      }
-      #taskbar {
-        max-width: 70%;
+        grid-template-columns: repeat(3, 1fr);
       }
     }
 
@@ -303,10 +244,26 @@
       width: 28px;
       height: 28px;
     }
+    
+    /* Rotation button */
+    .rotate-btn {
+      cursor: pointer;
+      background: rgba(0,0,0,0.2);
+      padding: 6px 10px;
+      border-radius: 40px;
+      transition: 0.15s;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .rotate-btn:hover, .rotate-btn:active {
+      background: rgba(255,255,255,0.2);
+    }
+    
     #tray {
       margin-left: auto;
       display: flex;
-      gap: 18px;
+      gap: 12px;
       font-size: 13px;
       font-weight: 600;
       color: white;
@@ -315,6 +272,7 @@
       padding: 6px 14px;
       border-radius: 40px;
       backdrop-filter: blur(4px);
+      align-items: center;
     }
     
     /* Install banner */
@@ -354,17 +312,6 @@
     }
     .hide-install {
       display: none;
-    }
-    
-    /* Mobile portrait adjustments */
-    @media (max-width: 500px) and (orientation: portrait) {
-      .menu-grid {
-        grid-template-columns: repeat(3, 1fr);
-        gap: 10px;
-      }
-      #desktop {
-        gap: 8px;
-      }
     }
   </style>
 </head>
@@ -462,13 +409,16 @@
   </div>
 </div>
 
-<!-- Taskbar -->
+<!-- Taskbar with Rotation Button -->
 <div id="taskbar-container">
   <div id="taskbar">
     <div id="start-btn" class="tb-btn">
       <img src="https://img.icons8.com/color/48/windows-11.png" alt="start">
     </div>
     <div id="tray">
+      <div id="rotate-btn" class="rotate-btn" style="cursor: pointer;">
+        🔄 <span id="rotate-icon">↻</span>
+      </div>
       <span id="batt">🔋 --%</span>
       <span id="clock">--:--</span>
     </div>
@@ -484,6 +434,60 @@
 
 <script>
   (function() {
+    // ---------- ORIENTATION CONTROL ----------
+    const rotateBtn = document.getElementById('rotate-btn');
+    let currentOrientation = screen.orientation ? screen.orientation.type : (window.innerHeight > window.innerWidth ? 'portrait' : 'landscape');
+    
+    function forceOrientation(orientation) {
+      if (screen.orientation && screen.orientation.lock) {
+        // For modern browsers with screen.orientation API
+        screen.orientation.lock(orientation).catch(err => {
+          console.log('Orientation lock failed:', err);
+          // Fallback: just show message
+          alert('Tap the rotate button again or manually rotate your device');
+        });
+      } else {
+        // Fallback for older browsers
+        alert('Manual rotation: Please rotate your device');
+      }
+    }
+    
+    function toggleOrientation() {
+      if (currentOrientation.includes('portrait')) {
+        // Switch to landscape
+        forceOrientation('landscape');
+        currentOrientation = 'landscape';
+        document.getElementById('rotate-icon').innerHTML = '📱';
+        document.getElementById('rotate-icon').style.fontSize = '14px';
+      } else {
+        // Switch to portrait
+        forceOrientation('portrait');
+        currentOrientation = 'portrait';
+        document.getElementById('rotate-icon').innerHTML = '↻';
+      }
+    }
+    
+    // Update orientation display based on actual orientation
+    function updateOrientationIcon() {
+      const isLandscape = window.innerWidth > window.innerHeight;
+      if (isLandscape) {
+        document.getElementById('rotate-icon').innerHTML = '📱';
+        currentOrientation = 'landscape';
+      } else {
+        document.getElementById('rotate-icon').innerHTML = '↻';
+        currentOrientation = 'portrait';
+      }
+    }
+    
+    rotateBtn.addEventListener('click', toggleOrientation);
+    
+    // Listen to orientation changes
+    window.addEventListener('orientationchange', function() {
+      setTimeout(updateOrientationIcon, 100);
+    });
+    window.addEventListener('resize', updateOrientationIcon);
+    updateOrientationIcon();
+    
     // ---------- START MENU ----------
     const startBtn = document.getElementById('start-btn');
     const menuPanel = document.getElementById('start-menu');

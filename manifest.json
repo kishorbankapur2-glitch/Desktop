@@ -1,23 +1,20 @@
 {
-  "name": "Win 11 - UI Edition",
+  "name": "Windows 11 Launcher",
   "short_name": "Win11",
-
-  "start_url": "/Desktop/",
-  "scope": "/Desktop/",
-
+  "description": "Windows 11 Style Web Launcher",
+  "start_url": "index.html",
   "display": "standalone",
-
   "background_color": "#0a0a1a",
   "theme_color": "#0a0a1a",
-
+  "orientation": "portrait",
   "icons": [
     {
-      "src": "/Desktop/desktop.png",
+      "src": "desktop.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "/Desktop/desktop.png",
+      "src": "desktop.png",
       "sizes": "512x512",
       "type": "image/png"
     }

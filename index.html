@@ -1,202 +1,394 @@
-<!DOCTYPE html>
-<html lang="hi">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Win 11 - UI Edition</title>
-    <style>
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
-        body, html {
-            margin: 0; padding: 0; height: 100%;
-            font-family: 'Segoe UI', sans-serif;
-            overflow: hidden;
-            background: #0a0a1a url('https://images.unsplash.com/photo-1579373903781-fd5c0c30c4cd?q=80&w=1920&auto=format&fit=crop') no-repeat center center fixed;
-            background-size: cover;
-            transition: background 0.5s ease;
-        }
+<!DOCTYPE html>  <html lang="en">  <head>    <meta charset="UTF-8">      <meta name="viewport" content="width=device-width, initial-scale=1.0">        <title>Windows 11 Launcher</title>  <style>    *{      box-sizing:border-box;  -webkit-tap-highlight-color:transparent;
+}  body,html{
+margin:0;
+padding:0;
+height:100%;
+font-family:'Segoe UI',sans-serif;
+overflow:hidden;  background:#0a0a1a url('https://images.unsplash.com/photo-1579373903781-fd5c0c30c4cd?q=80&w=1920&auto=format&fit=crop')
+no-repeat center center fixed;
 
-        /* Desktop Layout */
-        #desktop {
-            height: calc(100vh - 70px);
-            display: flex;
-            flex-direction: column;
-            flex-wrap: wrap;
-            align-content: flex-start;
-            padding: 25px;
-            gap: 10px;
-        }
+background-size:cover;
+}
 
-        .app-icon {
-            width: 90px; height: 105px;
-            display: flex; flex-direction: column;
-            align-items: center; justify-content: center;
-            text-decoration: none; color: white;
-            border-radius: 10px;
-            text-shadow: 1px 1px 4px rgba(0,0,0,1);
-            font-size: 12px;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-        .app-icon:hover { background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(8px); }
-        
-        .app-icon img { width: 48px; height: 48px; margin-bottom: 8px; }
-        .white-mc { filter: brightness(0) invert(1); }
+/* Desktop */
 
-        .ai-box {
-            width: 48px; height: 48px;
-            background: linear-gradient(135deg, #60efff 0%, #0061ff 100%);
-            border-radius: 12px;
-            display: flex; align-items: center; justify-content: center;
-            font-weight: 900; font-size: 18px; color: white;
-            box-shadow: 0 0 15px rgba(0, 97, 255, 0.6);
-            margin-bottom: 8px;
-        }
+#desktop{
 
-        .wp-box { background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%); box-shadow: 0 0 15px rgba(255, 154, 158, 0.6); }
+height:calc(100vh - 70px);
 
-        /* Start Menu */
-        #start-menu {
-            position: fixed; bottom: -700px; left: 50%;
-            transform: translateX(-50%); width: 95%; max-width: 500px; height: 480px;
-            background: rgba(255, 255, 255, 0.92); backdrop-filter: blur(30px);
-            border-radius: 15px; border: 1px solid rgba(255, 255, 255, 0.5);
-            box-shadow: 0 20px 50px rgba(0,0,0,0.6);
-            padding: 25px; z-index: 9999; transition: bottom 0.4s cubic-bezier(0.1, 0.9, 0.2, 1);
-        }
-        #start-menu.active { bottom: 85px; }
+display:flex;
+flex-direction:column;
+flex-wrap:wrap;
 
-        .search-box { width: 100%; padding: 12px 15px; border-radius: 25px; border: 1px solid #ddd; margin-bottom: 25px; outline: none; }
-        .menu-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; overflow-y: auto; max-height: 320px; }
-        .menu-item { display: flex; flex-direction: column; align-items: center; text-decoration: none; color: #222; font-size: 11px; padding: 10px; border-radius: 8px; }
-        .menu-item:hover { background: rgba(0,0,0,0.05); }
-        .menu-item img { width: 35px; height: 35px; margin-bottom: 5px; }
+padding:25px;
+gap:12px;
 
-        /* Taskbar */
-        #taskbar-container { position: fixed; bottom: 15px; width: 100%; display: flex; justify-content: center; z-index: 10000; }
-        #taskbar {
-            width: 98%; height: 55px; background: rgba(255, 255, 255, 0.85);
-            backdrop-filter: blur(25px); display: flex; align-items: center;
-            padding: 0 15px; border-radius: 14px; box-shadow: 0 8px 32px rgba(0,0,0,0.4);
-        }
-        .center-icons { position: absolute; left: 50%; transform: translateX(-50%); display: flex; gap: 12px; align-items: center; }
-        .tb-btn { width: 42px; height: 42px; display: flex; align-items: center; justify-content: center; border-radius: 8px; cursor: pointer; }
-        .tb-btn img { width: 30px; height: 30px; pointer-events: none; }
-        #tray { margin-left: auto; display: flex; gap: 15px; font-size: 12px; font-weight: 700; color: #111; }
-    </style>
-</head>
-<body>
+align-content:flex-start;
 
-    <div id="start-menu">
-        <input type="text" id="search-input" class="search-box" placeholder="Search for apps...">
-        <div id="pinned-label" style="font-size: 12px; font-weight: 600; margin-bottom: 15px; color: #555;">Pinned Apps</div>
-        <div class="menu-grid" id="app-grid">
-            <a href="intent://#Intent;package=com.mojang.minecraftpe;end" class="menu-item"><img src="https://cdn-icons-png.flaticon.com/512/3233/3233519.png" style="filter: brightness(0);"><span>Minecraft</span></a>
-            <a href="intent://#Intent;package=com.google.android.apps.bard;end" class="menu-item"><div class="ai-box" style="width:35px; height:35px; font-size:14px; margin:0;">AI</div><span>Gemini</span></a>
-            <a href="intent://#Intent;package=com.android.chrome;end" class="menu-item"><img src="https://cdn-icons-png.flaticon.com/512/888/888846.png"><span>Chrome</span></a>
-            <a href="intent://#Intent;package=com.whatsapp;end" class="menu-item"><img src="https://cdn-icons-png.flaticon.com/512/733/733585.png"><span>WhatsApp</span></a>
-        </div>
-    </div>
+}
 
-    <div id="desktop">
-        <a href="intent://#Intent;package=com.mojang.minecraftpe;end" class="app-icon"><img src="https://cdn-icons-png.flaticon.com/512/3233/3233519.png" class="white-mc"><span>Minecraft</span></a>
-        <a href="intent://#Intent;package=com.google.android.apps.bard;end" class="app-icon"><div class="ai-box">AI</div><span>Gemini</span></a>
-        <a href="intent://#Intent;package=com.android.chrome;end" class="app-icon"><img src="https://cdn-icons-png.flaticon.com/512/888/888846.png"><span>Chrome</span></a>
-        
-        <div class="app-icon" id="change-wp-btn">
-            <div class="ai-box wp-box">🖼️</div>
-            <span>Wallpaper</span>
-            <input type="file" id="wp-input" accept="image/*" style="display: none;">
-        </div>
+.app-icon{
 
-        <a href="intent://#Intent;package=com.whatsapp;end" class="app-icon"><img src="https://cdn-icons-png.flaticon.com/512/733/733585.png"><span>WhatsApp</span></a>
-        <a href="intent://#Intent;package=com.instagram.android;end" class="app-icon"><img src="https://cdn-icons-png.flaticon.com/512/2111/2111463.png"><span>Instagram</span></a>
-        <a href="intent://#Intent;package=com.google.android.youtube;end" class="app-icon"><img src="https://cdn-icons-png.flaticon.com/512/1384/1384060.png"><span>YouTube</span></a>
-    </div>
+width:90px;
+height:105px;
 
-    <div id="taskbar-container">
-        <div id="taskbar">
-            <div id="start-btn" class="tb-btn"><img src="https://img.icons8.com/color/48/windows-11.png"></div>
-            <div class="center-icons">
-                <div class="tb-btn" onclick="location.href='intent://#Intent;package=com.android.chrome;end'"><img src="https://cdn-icons-png.flaticon.com/512/888/888846.png"></div>
-                <div class="tb-btn" onclick="location.href='intent://#Intent;package=com.google.android.apps.bard;end'"><div class="ai-box" style="width:30px; height:30px; font-size:12px; margin:0; border-radius:6px;">AI</div></div>
-                <div class="tb-btn" onclick="location.href='intent://#Intent;package=com.mojang.minecraftpe;end'"><img src="https://cdn-icons-png.flaticon.com/512/3233/3233519.png" class="white-mc"></div>
-            </div>
-            <div id="tray"><span id="batt">🔋 %</span><span id="clock">00:00</span></div>
-        </div>
-    </div>
+display:flex;
+flex-direction:column;
+align-items:center;
+justify-content:center;
 
-    <script>
-        const btn = document.getElementById('start-btn');
-        const menu = document.getElementById('start-menu');
-        const desk = document.getElementById('desktop');
-        const wpInput = document.getElementById('wp-input');
-        const wpBtn = document.getElementById('change-wp-btn');
-        const searchInput = document.getElementById('search-input');
-        const menuItems = document.querySelectorAll('.menu-item');
+text-decoration:none;
+color:white;
 
-        // Toggle Start Menu
-        btn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            menu.classList.toggle('active');
-            if(menu.classList.contains('active')) searchInput.focus();
-        });
+font-size:12px;
 
-        // Close menu when clicking desktop
-        desk.addEventListener('click', (e) => {
-            if(e.target.id === 'desktop') menu.classList.remove('active');
-        });
+border-radius:10px;
 
-        // Search Functionality
-        searchInput.addEventListener('input', (e) => {
-            const term = e.target.value.toLowerCase();
-            menuItems.forEach(item => {
-                const appName = item.querySelector('span').innerText.toLowerCase();
-                if (appName.includes(term)) {
-                    item.style.display = 'flex';
-                } else {
-                    item.style.display = 'none';
-                }
-            });
-        });
+cursor:pointer;
 
-        // Wallpaper Logic
-        wpBtn.addEventListener('click', () => wpInput.click());
-        wpInput.addEventListener('change', function() {
-            const file = this.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const base64Image = e.target.result;
-                    localStorage.setItem('win11-wallpaper', base64Image);
-                    applyWallpaper(base64Image);
-                };
-                reader.readAsDataURL(file);
-            }
-        });
+text-shadow:1px 1px 4px black;
 
-        function applyWallpaper(imgData) {
-            document.body.style.backgroundImage = `url('${imgData}')`;
-        }
+}
 
-        window.addEventListener('load', () => {
-            const savedWp = localStorage.getItem('win11-wallpaper');
-            if (savedWp) applyWallpaper(savedWp);
-        });
+.app-icon:hover{
 
-        // Tray Updates
-        function update() {
-            const d = new Date();
-            document.getElementById('clock').innerText = d.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-        }
-        async function b() {
-            if(navigator.getBattery) {
-                const bat = await navigator.getBattery();
-                const u = () => document.getElementById('batt').innerText = `🔋 ${Math.round(bat.level*100)}%`;
-                u(); bat.onlevelchange = u;
-            }
-        }
-        setInterval(update, 1000); update(); b();
-    </script>
-</body>
-</html>
+background:rgba(255,255,255,0.15);
+backdrop-filter:blur(8px);
+
+}
+
+.app-icon img{
+
+width:48px;
+height:48px;
+margin-bottom:8px;
+
+}
+
+.emoji-icon{
+font-size:40px;
+margin-bottom:8px;
+}
+
+/* Start Menu */
+
+#start-menu{
+
+position:fixed;
+
+bottom:-700px;
+left:50%;
+
+transform:translateX(-50%);
+
+width:95%;
+max-width:520px;
+
+height:500px;
+
+background:rgba(255,255,255,0.92);
+
+backdrop-filter:blur(30px);
+
+border-radius:15px;
+
+padding:25px;
+
+transition:bottom .4s;
+
+z-index:9999;
+
+}
+
+#start-menu.active{
+bottom:85px;
+}
+
+.search-box{
+
+width:100%;
+
+padding:12px 15px;
+
+border-radius:25px;
+
+border:1px solid #ddd;
+
+margin-bottom:20px;
+
+outline:none;
+
+}
+
+.menu-grid{
+
+display:grid;
+
+grid-template-columns:repeat(4,1fr);
+
+gap:15px;
+
+overflow-y:auto;
+
+max-height:350px;
+
+}
+
+.menu-item{
+
+display:flex;
+flex-direction:column;
+
+align-items:center;
+
+font-size:11px;
+
+text-decoration:none;
+
+color:black;
+
+padding:8px;
+
+border-radius:8px;
+
+cursor:pointer;
+
+}
+
+.menu-item:hover{
+background:rgba(0,0,0,0.05);
+}
+
+.menu-item img{
+width:35px;
+height:35px;
+margin-bottom:5px;
+}
+
+.menu-emoji{
+font-size:30px;
+margin-bottom:5px;
+}
+
+/* Taskbar */
+
+#taskbar-container{
+
+position:fixed;
+bottom:15px;
+
+width:100%;
+
+display:flex;
+
+justify-content:center;
+
+}
+
+#taskbar{
+
+width:98%;
+height:55px;
+
+background:rgba(255,255,255,0.85);
+
+backdrop-filter:blur(25px);
+
+border-radius:14px;
+
+display:flex;
+
+align-items:center;
+
+padding:0 15px;
+
+}
+
+.tb-btn{
+
+width:42px;
+height:42px;
+
+display:flex;
+
+align-items:center;
+justify-content:center;
+
+cursor:pointer;
+
+}
+
+.tb-btn img{
+width:30px;
+height:30px;
+}
+
+#tray{
+
+margin-left:auto;
+
+display:flex;
+
+gap:15px;
+
+font-size:12px;
+
+font-weight:bold;
+
+}
+
+</style>  </head>  <body>  <!-- START MENU -->  <div id="start-menu">  <input type="text" class="search-box" placeholder="Search apps...">  <div class="menu-grid">  <a href="intent://#Intent;package=com.whatsapp;end" class="menu-item">
+<img src="https://cdn-icons-png.flaticon.com/512/733/733585.png">
+<span>WhatsApp</span>
+</a>  <a href="intent://#Intent;package=com.instagram.android;end" class="menu-item">
+<img src="https://cdn-icons-png.flaticon.com/512/2111/2111463.png">
+<span>Instagram</span>
+</a>  <a href="intent://#Intent;package=com.facebook.katana;end" class="menu-item">
+<img src="https://cdn-icons-png.flaticon.com/512/733/733547.png">
+<span>Facebook</span>
+</a>  <a href="intent://#Intent;package=org.telegram.messenger;end" class="menu-item">
+<img src="https://cdn-icons-png.flaticon.com/512/2111/2111646.png">
+<span>Telegram</span>
+</a>  <a href="intent://#Intent;package=com.android.chrome;end" class="menu-item">
+<img src="https://cdn-icons-png.flaticon.com/512/888/888846.png">
+<span>Chrome</span>
+</a>  <a href="intent://#Intent;package=com.google.android.youtube;end" class="menu-item">
+<img src="https://cdn-icons-png.flaticon.com/512/1384/1384060.png">
+<span>YouTube</span>
+</a>  <a href="intent://#Intent;package=com.google.android.gm;end" class="menu-item">
+<img src="https://cdn-icons-png.flaticon.com/512/732/732200.png">
+<span>Gmail</span>
+</a>  <a href="intent://#Intent;package=com.google.android.apps.maps;end" class="menu-item">
+<img src="https://cdn-icons-png.flaticon.com/512/684/684908.png">
+<span>Maps</span>
+</a>  <a href="intent://#Intent;package=com.google.android.apps.photos;end" class="menu-item">
+<img src="https://cdn-icons-png.flaticon.com/512/685/685686.png">
+<span>Photos</span>
+</a>  <a href="intent://#Intent;package=com.google.android.calculator;end" class="menu-item">
+<img src="https://img.icons8.com/fluency/96/calculator.png">
+<span>Calculator</span>
+</a>  <a href="intent://#Intent;package=com.google.android.deskclock;end" class="menu-item">
+<img src="https://cdn-icons-png.flaticon.com/512/2972/2972531.png">
+<span>Clock</span>
+</a>  <!-- Minecraft Emoji -->  <a href="intent://#Intent;package=com.mojang.minecraftpe;end" class="menu-item">  <div class="menu-emoji">🪏</div>  <span>Minecraft</span>
+
+</a>  <!-- Wallpaper -->  <div class="menu-item" id="wallpaper-menu-btn">  <img src="https://cdn-icons-png.flaticon.com/512/685/685655.png">  <span>Wallpaper</span>
+
+<input type="file" id="wp-input" accept="image/*" style="display:none;">  </div>  </div>  </div>  <!-- DESKTOP -->  <div id="desktop">  <a href="intent://#Intent;package=com.android.chrome;end" class="app-icon">
+<img src="https://cdn-icons-png.flaticon.com/512/888/888846.png">
+<span>Chrome</span>
+</a>  <a href="intent://#Intent;package=com.whatsapp;end" class="app-icon">
+<img src="https://cdn-icons-png.flaticon.com/512/733/733585.png">
+<span>WhatsApp</span>
+</a>  <a href="intent://#Intent;package=com.google.android.youtube;end" class="app-icon">
+<img src="https://cdn-icons-png.flaticon.com/512/1384/1384060.png">
+<span>YouTube</span>
+</a>  <!-- Minecraft Emoji Desktop -->  <a href="intent://#Intent;package=com.mojang.minecraftpe;end" class="app-icon">  <div class="emoji-icon">🪏</div>  <span>Minecraft</span>
+
+</a>  </div>  <!-- TASKBAR -->  <div id="taskbar-container">  <div id="taskbar">  <div id="start-btn" class="tb-btn">  <img src="https://img.icons8.com/color/48/windows-11.png">  </div>  <div id="tray">  <span id="batt">🔋 %</span>
+
+<span id="clock">00:00</span>
+
+</div>  </div>  </div>  <script>    /* Start Menu */  const btn=document.getElementById('start-btn');      
+const menu=document.getElementById('start-menu');  btn.onclick=e=>{    
+e.stopPropagation();    
+menu.classList.toggle('active');    
+};  /* Search */  const search=document.querySelector('.search-box');
+const items=document.querySelectorAll('.menu-item');
+
+search.addEventListener('input',()=>{
+
+let val=search.value.toLowerCase();
+
+items.forEach(i=>{
+
+let text=i.innerText.toLowerCase();
+
+i.style.display=text.includes(val)?"flex":"none";
+
+});
+
+});
+
+/* Wallpaper */
+
+const wpBtn=document.getElementById('wallpaper-menu-btn');
+const wpInput=document.getElementById('wp-input');
+
+wpBtn.onclick=()=>wpInput.click();
+
+wpInput.onchange=function(){
+
+const file=this.files[0];
+
+if(file){
+
+const reader=new FileReader();
+
+reader.onload=e=>{
+
+localStorage.setItem('win11-wallpaper',e.target.result);
+
+document.body.style.backgroundImage=
+url('${e.target.result}');
+
+};
+
+reader.readAsDataURL(file);
+
+}
+
+};
+
+window.onload=()=>{
+
+const saved=localStorage.getItem('win11-wallpaper');
+
+if(saved)
+
+document.body.style.backgroundImage=url('${saved}');
+
+};
+
+/* Clock */
+
+function clock(){
+
+let d=new Date();
+
+document.getElementById('clock').innerText=
+d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+
+}
+
+setInterval(clock,1000);
+clock();
+
+/* Battery */
+
+async function battery(){
+
+if(navigator.getBattery){
+
+let bat=await navigator.getBattery();
+
+let update=()=>{
+
+document.getElementById('batt').innerText=
+🔋 ${Math.round(bat.level*100)}%;
+
+};
+
+update();
+bat.onlevelchange=update;
+
+}
+
+}
+
+battery();
+
+</script>  </body>
+
+</html>      

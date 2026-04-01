@@ -25,6 +25,32 @@
       overflow: hidden;
       background: #0a0a1a;
       transition: background-image 0.2s ease;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+    }
+
+    /* Main wrapper that will rotate */
+    .app-wrapper {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      transform-origin: center center;
+      transition: transform 0.3s ease;
+    }
+
+    /* Landscape rotated state */
+    .app-wrapper.rotated {
+      transform: rotate(90deg);
+      width: 100vh;
+      height: 100vw;
+      transform-origin: center center;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) rotate(90deg);
     }
 
     /* Desktop grid */
@@ -41,7 +67,12 @@
       scrollbar-width: thin;
     }
 
-    /* Landscape mode */
+    /* When rotated, adjust desktop height */
+    .app-wrapper.rotated #desktop {
+      height: calc(100vw - 70px);
+      width: 100vh;
+    }
+
     @media (orientation: landscape) {
       #desktop {
         padding: 15px 25px;
@@ -63,7 +94,6 @@
       }
     }
 
-    /* Portrait mode */
     @media (orientation: portrait) {
       .menu-grid {
         grid-template-columns: repeat(4, 1fr);
@@ -74,6 +104,11 @@
       .menu-grid {
         grid-template-columns: repeat(3, 1fr);
       }
+    }
+
+    /* When rotated, adjust menu grid */
+    .app-wrapper.rotated .menu-grid {
+      grid-template-columns: repeat(5, 1fr) !important;
     }
 
     #desktop::-webkit-scrollbar {
@@ -139,8 +174,22 @@
       border: 1px solid rgba(255,255,255,0.4);
     }
 
-    #start-menu.active {
-      bottom: 80px;
+    /* Fix start menu position when rotated */
+    .app-wrapper.rotated #start-menu {
+      position: fixed;
+      bottom: auto;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 85%;
+      max-width: 600px;
+      height: auto;
+      max-height: 80vh;
+    }
+
+    .app-wrapper.rotated #start-menu.active {
+      bottom: auto;
+      top: 50%;
     }
 
     .search-box {
@@ -225,6 +274,31 @@
       box-shadow: 0 5px 20px rgba(0,0,0,0.3);
       border: 1px solid rgba(255,255,255,0.2);
       pointer-events: auto;
+    }
+
+    /* Fix taskbar when rotated */
+    .app-wrapper.rotated #taskbar-container {
+      bottom: auto;
+      top: 50%;
+      left: auto;
+      right: 12px;
+      transform: translateY(-50%);
+      width: auto;
+    }
+
+    .app-wrapper.rotated #taskbar {
+      width: 58px;
+      height: auto;
+      flex-direction: column;
+      padding: 12px 0;
+      gap: 12px;
+    }
+
+    .app-wrapper.rotated #tray {
+      margin-left: 0;
+      flex-direction: column;
+      gap: 10px;
+      padding: 10px;
     }
 
     .tb-btn {
@@ -313,180 +387,177 @@
     .hide-install {
       display: none;
     }
+
+    /* Fix rotated banner */
+    .app-wrapper.rotated .install-prompt {
+      bottom: auto;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+    }
   </style>
 </head>
 <body>
-
-<!-- Desktop Icons Area -->
-<div id="desktop">
-  <a href="intent://#Intent;package=com.android.chrome;end" class="app-icon">
-    <img src="https://cdn-icons-png.flaticon.com/512/888/888846.png" alt="Chrome">
-    <span>Chrome</span>
-  </a>
-  <a href="intent://#Intent;package=com.whatsapp;end" class="app-icon">
-    <img src="https://cdn-icons-png.flaticon.com/512/733/733585.png" alt="WhatsApp">
-    <span>WhatsApp</span>
-  </a>
-  <a href="intent://#Intent;package=com.google.android.youtube;end" class="app-icon">
-    <img src="https://cdn-icons-png.flaticon.com/512/1384/1384060.png" alt="YouTube">
-    <span>YouTube</span>
-  </a>
-  <div class="app-icon" data-minecraft>
-    <div class="emoji-icon">🪏</div>
-    <span>Minecraft</span>
-  </div>
-  <a href="intent://#Intent;package=com.instagram.android;end" class="app-icon">
-    <img src="https://cdn-icons-png.flaticon.com/512/2111/2111463.png" alt="Instagram">
-    <span>Instagram</span>
-  </a>
-  <a href="intent://#Intent;package=com.facebook.katana;end" class="app-icon">
-    <img src="https://cdn-icons-png.flaticon.com/512/733/733547.png" alt="FB">
-    <span>Facebook</span>
-  </a>
-  <a href="intent://#Intent;package=org.telegram.messenger;end" class="app-icon">
-    <img src="https://cdn-icons-png.flaticon.com/512/2111/2111646.png" alt="Telegram">
-    <span>Telegram</span>
-  </a>
-</div>
-
-<!-- START MENU -->
-<div id="start-menu">
-  <input type="text" class="search-box" placeholder="Search apps...">
-  <div class="menu-grid">
-    <a href="intent://#Intent;package=com.whatsapp;end" class="menu-item">
-      <img src="https://cdn-icons-png.flaticon.com/512/733/733585.png">
-      <span>WhatsApp</span>
-    </a>
-    <a href="intent://#Intent;package=com.instagram.android;end" class="menu-item">
-      <img src="https://cdn-icons-png.flaticon.com/512/2111/2111463.png">
-      <span>Instagram</span>
-    </a>
-    <a href="intent://#Intent;package=com.facebook.katana;end" class="menu-item">
-      <img src="https://cdn-icons-png.flaticon.com/512/733/733547.png">
-      <span>Facebook</span>
-    </a>
-    <a href="intent://#Intent;package=org.telegram.messenger;end" class="menu-item">
-      <img src="https://cdn-icons-png.flaticon.com/512/2111/2111646.png">
-      <span>Telegram</span>
-    </a>
-    <a href="intent://#Intent;package=com.android.chrome;end" class="menu-item">
-      <img src="https://cdn-icons-png.flaticon.com/512/888/888846.png">
+<div class="app-wrapper">
+  <!-- Desktop Icons Area -->
+  <div id="desktop">
+    <a href="intent://#Intent;package=com.android.chrome;end" class="app-icon">
+      <img src="https://cdn-icons-png.flaticon.com/512/888/888846.png" alt="Chrome">
       <span>Chrome</span>
     </a>
-    <a href="intent://#Intent;package=com.google.android.youtube;end" class="menu-item">
-      <img src="https://cdn-icons-png.flaticon.com/512/1384/1384060.png">
+    <a href="intent://#Intent;package=com.whatsapp;end" class="app-icon">
+      <img src="https://cdn-icons-png.flaticon.com/512/733/733585.png" alt="WhatsApp">
+      <span>WhatsApp</span>
+    </a>
+    <a href="intent://#Intent;package=com.google.android.youtube;end" class="app-icon">
+      <img src="https://cdn-icons-png.flaticon.com/512/1384/1384060.png" alt="YouTube">
       <span>YouTube</span>
     </a>
-    <a href="intent://#Intent;package=com.google.android.gm;end" class="menu-item">
-      <img src="https://cdn-icons-png.flaticon.com/512/732/732200.png">
-      <span>Gmail</span>
-    </a>
-    <a href="intent://#Intent;package=com.google.android.apps.maps;end" class="menu-item">
-      <img src="https://cdn-icons-png.flaticon.com/512/684/684908.png">
-      <span>Maps</span>
-    </a>
-    <a href="intent://#Intent;package=com.google.android.apps.photos;end" class="menu-item">
-      <img src="https://cdn-icons-png.flaticon.com/512/685/685686.png">
-      <span>Photos</span>
-    </a>
-    <a href="intent://#Intent;package=com.google.android.calculator;end" class="menu-item">
-      <img src="https://img.icons8.com/fluency/96/calculator.png">
-      <span>Calculator</span>
-    </a>
-    <a href="intent://#Intent;package=com.google.android.deskclock;end" class="menu-item">
-      <img src="https://cdn-icons-png.flaticon.com/512/2972/2972531.png">
-      <span>Clock</span>
-    </a>
-    <div class="menu-item" data-minecraft-menu>
-      <div class="menu-emoji">🪏</div>
+    <div class="app-icon" data-minecraft>
+      <div class="emoji-icon">🪏</div>
       <span>Minecraft</span>
     </div>
-    <div class="menu-item" id="wallpaper-menu-btn">
-      <img src="https://cdn-icons-png.flaticon.com/512/685/685655.png">
-      <span>Wallpaper</span>
-      <input type="file" id="wp-input" accept="image/*" style="display:none;">
-    </div>
+    <a href="intent://#Intent;package=com.instagram.android;end" class="app-icon">
+      <img src="https://cdn-icons-png.flaticon.com/512/2111/2111463.png" alt="Instagram">
+      <span>Instagram</span>
+    </a>
+    <a href="intent://#Intent;package=com.facebook.katana;end" class="app-icon">
+      <img src="https://cdn-icons-png.flaticon.com/512/733/733547.png" alt="FB">
+      <span>Facebook</span>
+    </a>
+    <a href="intent://#Intent;package=org.telegram.messenger;end" class="app-icon">
+      <img src="https://cdn-icons-png.flaticon.com/512/2111/2111646.png" alt="Telegram">
+      <span>Telegram</span>
+    </a>
   </div>
-</div>
 
-<!-- Taskbar with Rotation Button -->
-<div id="taskbar-container">
-  <div id="taskbar">
-    <div id="start-btn" class="tb-btn">
-      <img src="https://img.icons8.com/color/48/windows-11.png" alt="start">
-    </div>
-    <div id="tray">
-      <div id="rotate-btn" class="rotate-btn" style="cursor: pointer;">
-        🔄 <span id="rotate-icon">↻</span>
+  <!-- START MENU -->
+  <div id="start-menu">
+    <input type="text" class="search-box" placeholder="Search apps...">
+    <div class="menu-grid">
+      <a href="intent://#Intent;package=com.whatsapp;end" class="menu-item">
+        <img src="https://cdn-icons-png.flaticon.com/512/733/733585.png">
+        <span>WhatsApp</span>
+      </a>
+      <a href="intent://#Intent;package=com.instagram.android;end" class="menu-item">
+        <img src="https://cdn-icons-png.flaticon.com/512/2111/2111463.png">
+        <span>Instagram</span>
+      </a>
+      <a href="intent://#Intent;package=com.facebook.katana;end" class="menu-item">
+        <img src="https://cdn-icons-png.flaticon.com/512/733/733547.png">
+        <span>Facebook</span>
+      </a>
+      <a href="intent://#Intent;package=org.telegram.messenger;end" class="menu-item">
+        <img src="https://cdn-icons-png.flaticon.com/512/2111/2111646.png">
+        <span>Telegram</span>
+      </a>
+      <a href="intent://#Intent;package=com.android.chrome;end" class="menu-item">
+        <img src="https://cdn-icons-png.flaticon.com/512/888/888846.png">
+        <span>Chrome</span>
+      </a>
+      <a href="intent://#Intent;package=com.google.android.youtube;end" class="menu-item">
+        <img src="https://cdn-icons-png.flaticon.com/512/1384/1384060.png">
+        <span>YouTube</span>
+      </a>
+      <a href="intent://#Intent;package=com.google.android.gm;end" class="menu-item">
+        <img src="https://cdn-icons-png.flaticon.com/512/732/732200.png">
+        <span>Gmail</span>
+      </a>
+      <a href="intent://#Intent;package=com.google.android.apps.maps;end" class="menu-item">
+        <img src="https://cdn-icons-png.flaticon.com/512/684/684908.png">
+        <span>Maps</span>
+      </a>
+      <a href="intent://#Intent;package=com.google.android.apps.photos;end" class="menu-item">
+        <img src="https://cdn-icons-png.flaticon.com/512/685/685686.png">
+        <span>Photos</span>
+      </a>
+      <a href="intent://#Intent;package=com.google.android.calculator;end" class="menu-item">
+        <img src="https://img.icons8.com/fluency/96/calculator.png">
+        <span>Calculator</span>
+      </a>
+      <a href="intent://#Intent;package=com.google.android.deskclock;end" class="menu-item">
+        <img src="https://cdn-icons-png.flaticon.com/512/2972/2972531.png">
+        <span>Clock</span>
+      </a>
+      <div class="menu-item" data-minecraft-menu>
+        <div class="menu-emoji">🪏</div>
+        <span>Minecraft</span>
       </div>
-      <span id="batt">🔋 --%</span>
-      <span id="clock">--:--</span>
+      <div class="menu-item" id="wallpaper-menu-btn">
+        <img src="https://cdn-icons-png.flaticon.com/512/685/685655.png">
+        <span>Wallpaper</span>
+        <input type="file" id="wp-input" accept="image/*" style="display:none;">
+      </div>
     </div>
   </div>
-</div>
 
-<!-- Install banner -->
-<div id="installBanner" class="install-prompt hide-install">
-  <span>📱 Install Windows 11 Launcher</span>
-  <button id="installBtn">Install</button>
-  <button id="dismissInstall">Later</button>
+  <!-- Taskbar with Rotation Button -->
+  <div id="taskbar-container">
+    <div id="taskbar">
+      <div id="start-btn" class="tb-btn">
+        <img src="https://img.icons8.com/color/48/windows-11.png" alt="start">
+      </div>
+      <div id="tray">
+        <div id="rotate-btn" class="rotate-btn" style="cursor: pointer;">
+          🔄 <span id="rotate-icon">↻</span>
+        </div>
+        <span id="batt">🔋 --%</span>
+        <span id="clock">--:--</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Install banner -->
+  <div id="installBanner" class="install-prompt hide-install">
+    <span>📱 Install Windows 11 Launcher</span>
+    <button id="installBtn">Install</button>
+    <button id="dismissInstall">Later</button>
+  </div>
 </div>
 
 <script>
   (function() {
-    // ---------- ORIENTATION CONTROL ----------
+    // ---------- ORIENTATION CONTROL - CSS ROTATION ----------
+    const wrapper = document.querySelector('.app-wrapper');
     const rotateBtn = document.getElementById('rotate-btn');
-    let currentOrientation = screen.orientation ? screen.orientation.type : (window.innerHeight > window.innerWidth ? 'portrait' : 'landscape');
+    const rotateIcon = document.getElementById('rotate-icon');
+    let isRotated = false;
     
-    function forceOrientation(orientation) {
-      if (screen.orientation && screen.orientation.lock) {
-        // For modern browsers with screen.orientation API
-        screen.orientation.lock(orientation).catch(err => {
-          console.log('Orientation lock failed:', err);
-          // Fallback: just show message
-          alert('Tap the rotate button again or manually rotate your device');
-        });
+    function toggleRotation() {
+      isRotated = !isRotated;
+      if (isRotated) {
+        wrapper.classList.add('rotated');
+        rotateIcon.innerHTML = '📱';
+        // Show a small hint
+        setTimeout(() => {
+          const hint = document.createElement('div');
+          hint.textContent = 'Landscape mode • Tap again to return';
+          hint.style.position = 'fixed';
+          hint.style.bottom = '100px';
+          hint.style.left = '50%';
+          hint.style.transform = 'translateX(-50%)';
+          hint.style.background = 'rgba(0,0,0,0.8)';
+          hint.style.color = 'white';
+          hint.style.padding = '8px 16px';
+          hint.style.borderRadius = '20px';
+          hint.style.fontSize = '12px';
+          hint.style.zIndex = '10003';
+          hint.style.pointerEvents = 'none';
+          document.body.appendChild(hint);
+          setTimeout(() => hint.remove(), 2000);
+        }, 100);
       } else {
-        // Fallback for older browsers
-        alert('Manual rotation: Please rotate your device');
+        wrapper.classList.remove('rotated');
+        rotateIcon.innerHTML = '↻';
       }
     }
     
-    function toggleOrientation() {
-      if (currentOrientation.includes('portrait')) {
-        // Switch to landscape
-        forceOrientation('landscape');
-        currentOrientation = 'landscape';
-        document.getElementById('rotate-icon').innerHTML = '📱';
-        document.getElementById('rotate-icon').style.fontSize = '14px';
-      } else {
-        // Switch to portrait
-        forceOrientation('portrait');
-        currentOrientation = 'portrait';
-        document.getElementById('rotate-icon').innerHTML = '↻';
-      }
-    }
+    rotateBtn.addEventListener('click', toggleRotation);
     
-    // Update orientation display based on actual orientation
-    function updateOrientationIcon() {
-      const isLandscape = window.innerWidth > window.innerHeight;
-      if (isLandscape) {
-        document.getElementById('rotate-icon').innerHTML = '📱';
-        currentOrientation = 'landscape';
-      } else {
-        document.getElementById('rotate-icon').innerHTML = '↻';
-        currentOrientation = 'portrait';
-      }
-    }
-    
-    rotateBtn.addEventListener('click', toggleOrientation);
-    
-    // Listen to orientation changes
-    window.addEventListener('orientationchange', function() {
-      setTimeout(updateOrientationIcon, 100);
+    // Fix touch events when rotated
+    wrapper.addEventListener('touchstart', (e) => {
+      // This helps with touch accuracy when rotated
     });
-    window.addEventListener('resize', updateOrientationIcon);
-    updateOrientationIcon();
     
     // ---------- START MENU ----------
     const startBtn = document.getElementById('start-btn');
@@ -636,12 +707,10 @@
       installBanner.classList.add('hide-install');
     });
 
-    // Service Worker
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('./sw.js').catch(err => console.log('SW error:', err));
     }
     
-    // Prevent context menu
     document.querySelectorAll('.app-icon, .menu-item, .tb-btn').forEach(el => {
       el.addEventListener('contextmenu', (e) => e.preventDefault());
     });

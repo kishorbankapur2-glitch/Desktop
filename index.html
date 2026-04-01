@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
   <title>Windows 11 Launcher</title>
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#0a0a1a">
@@ -13,33 +13,86 @@
     * {
       box-sizing: border-box;
       -webkit-tap-highlight-color: transparent;
-      user-select: none; /* better app feel */
+      user-select: none;
     }
 
     body, html {
       margin: 0;
       padding: 0;
+      width: 100%;
       height: 100%;
       font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, 'Roboto', sans-serif;
       overflow: hidden;
       background: #0a0a1a;
       transition: background-image 0.2s ease;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
     }
 
-    /* Desktop grid */
+    /* Desktop grid - responsive for landscape */
     #desktop {
       height: calc(100vh - 70px);
+      width: 100%;
       display: flex;
-      flex-direction: column;
+      flex-direction: row;
       flex-wrap: wrap;
       padding: 20px 18px;
       gap: 12px;
       align-content: flex-start;
       overflow-y: auto;
+      overflow-x: hidden;
       scrollbar-width: thin;
     }
 
-    /* Hide scrollbar on desktop for cleaner look */
+    /* Landscape optimization */
+    @media (orientation: landscape) {
+      #desktop {
+        padding: 15px 25px;
+        gap: 15px;
+      }
+      .app-icon {
+        width: 85px;
+        height: 95px;
+      }
+      .app-icon img {
+        width: 44px;
+        height: 44px;
+      }
+      .emoji-icon {
+        font-size: 38px;
+      }
+      #start-menu {
+        max-width: 650px;
+        height: 480px;
+        bottom: -600px;
+      }
+      #start-menu.active {
+        bottom: 75px;
+      }
+      .menu-grid {
+        grid-template-columns: repeat(5, 1fr);
+        max-height: 340px;
+      }
+      #taskbar {
+        max-width: 85%;
+        height: 52px;
+      }
+    }
+
+    /* Tablet and larger screens */
+    @media (min-width: 768px) and (orientation: landscape) {
+      .app-icon {
+        width: 100px;
+        height: 110px;
+      }
+      .menu-grid {
+        grid-template-columns: repeat(6, 1fr);
+      }
+    }
+
     #desktop::-webkit-scrollbar {
       width: 5px;
       background: transparent;
@@ -65,10 +118,10 @@
       transition: all 0.2s ease;
       background: transparent;
       border: none;
-      backdrop-filter: blur(0px);
+      flex-shrink: 0;
     }
 
-    .app-icon:hover {
+    .app-icon:hover, .app-icon:active {
       background: rgba(255,255,255,0.2);
       backdrop-filter: blur(10px);
       transform: scale(1.02);
@@ -86,7 +139,7 @@
       margin-bottom: 8px;
     }
 
-    /* ----- START MENU (modern fluent) ----- */
+    /* ----- START MENU ----- */
     #start-menu {
       position: fixed;
       bottom: -700px;
@@ -107,6 +160,20 @@
 
     #start-menu.active {
       bottom: 80px;
+    }
+
+    /* Landscape start menu adjustment */
+    @media (orientation: landscape) and (max-height: 500px) {
+      #start-menu {
+        height: 380px;
+        bottom: -450px;
+      }
+      #start-menu.active {
+        bottom: 70px;
+      }
+      .menu-grid {
+        max-height: 260px;
+      }
     }
 
     .search-box {
@@ -153,7 +220,7 @@
       background: transparent;
       font-weight: 500;
     }
-    .menu-item:hover {
+    .menu-item:hover, .menu-item:active {
       background: rgba(0, 0, 0, 0.08);
       backdrop-filter: blur(2px);
     }
@@ -171,6 +238,8 @@
     #taskbar-container {
       position: fixed;
       bottom: 12px;
+      left: 0;
+      right: 0;
       width: 100%;
       display: flex;
       justify-content: center;
@@ -191,6 +260,15 @@
       border: 1px solid rgba(255,255,255,0.2);
       pointer-events: auto;
     }
+    
+    @media (orientation: landscape) {
+      #taskbar {
+        width: 90%;
+        max-width: 700px;
+        height: 52px;
+      }
+    }
+
     .tb-btn {
       width: 46px;
       height: 46px;
@@ -201,7 +279,7 @@
       border-radius: 18px;
       transition: 0.15s;
     }
-    .tb-btn:hover {
+    .tb-btn:hover, .tb-btn:active {
       background: rgba(255,255,255,0.2);
     }
     .tb-btn img {
@@ -221,7 +299,8 @@
       border-radius: 40px;
       backdrop-filter: blur(4px);
     }
-    /* install banner / pwa prompt */
+    
+    /* Install banner */
     .install-prompt {
       position: fixed;
       bottom: 90px;
@@ -242,6 +321,13 @@
       white-space: nowrap;
       font-family: inherit;
     }
+    
+    @media (orientation: landscape) {
+      .install-prompt {
+        bottom: 80px;
+      }
+    }
+    
     .install-prompt button {
       background: #0078d4;
       border: none;
@@ -258,7 +344,9 @@
     .hide-install {
       display: none;
     }
-    @media (max-width: 500px) {
+    
+    /* Mobile portrait adjustments */
+    @media (max-width: 500px) and (orientation: portrait) {
       .menu-grid {
         grid-template-columns: repeat(3, 1fr);
         gap: 10px;
@@ -289,7 +377,6 @@
     <div class="emoji-icon">🪏</div>
     <span>Minecraft</span>
   </div>
-  <!-- additional handy apps -->
   <a href="intent://#Intent;package=com.instagram.android;end" class="app-icon">
     <img src="https://cdn-icons-png.flaticon.com/512/2111/2111463.png" alt="Instagram">
     <span>Instagram</span>
@@ -297,6 +384,10 @@
   <a href="intent://#Intent;package=com.facebook.katana;end" class="app-icon">
     <img src="https://cdn-icons-png.flaticon.com/512/733/733547.png" alt="FB">
     <span>Facebook</span>
+  </a>
+  <a href="intent://#Intent;package=org.telegram.messenger;end" class="app-icon">
+    <img src="https://cdn-icons-png.flaticon.com/512/2111/2111646.png" alt="Telegram">
+    <span>Telegram</span>
   </a>
 </div>
 
@@ -348,12 +439,10 @@
       <img src="https://cdn-icons-png.flaticon.com/512/2972/2972531.png">
       <span>Clock</span>
     </a>
-    <!-- Minecraft Emoji -->
     <div class="menu-item" data-minecraft-menu>
       <div class="menu-emoji">🪏</div>
       <span>Minecraft</span>
     </div>
-    <!-- Wallpaper picker -->
     <div class="menu-item" id="wallpaper-menu-btn">
       <img src="https://cdn-icons-png.flaticon.com/512/685/685655.png">
       <span>Wallpaper</span>
@@ -375,7 +464,7 @@
   </div>
 </div>
 
-<!-- Install prompt (PWA) -->
+<!-- Install banner -->
 <div id="installBanner" class="install-prompt hide-install">
   <span>📱 Install Windows 11 Launcher</span>
   <button id="installBtn">Install</button>
@@ -393,7 +482,6 @@
       menuPanel.classList.toggle('active');
     }
     startBtn.addEventListener('click', toggleMenu);
-    // click outside to close start menu
     document.addEventListener('click', function(event) {
       if (!menuPanel.contains(event.target) && event.target !== startBtn && !startBtn.contains(event.target)) {
         closeMenu();
@@ -416,7 +504,7 @@
       });
     });
 
-    // ---------- WALLPAPER (with local storage) ----------
+    // ---------- WALLPAPER ----------
     const wallpaperBtn = document.getElementById('wallpaper-menu-btn');
     const wpInput = document.getElementById('wp-input');
     if (wallpaperBtn) {
@@ -441,7 +529,7 @@
         reader.readAsDataURL(file);
       }
     });
-    // Load saved wallpaper
+    
     const savedWallpaper = localStorage.getItem('win11-wallpaper');
     if (savedWallpaper) {
       document.body.style.backgroundImage = `url('${savedWallpaper}')`;
@@ -449,7 +537,6 @@
       document.body.style.backgroundPosition = "center";
       document.body.style.backgroundAttachment = "fixed";
     } else {
-      // default unsplash image
       document.body.style.backgroundImage = `url('https://images.unsplash.com/photo-1579373903781-fd5c0c30c4cd?q=80&w=1920&auto=format')`;
       document.body.style.backgroundSize = "cover";
       document.body.style.backgroundPosition = "center";
@@ -465,7 +552,7 @@
     updateClock();
     setInterval(updateClock, 1000);
 
-    // ---------- BATTERY (with fallback) ----------
+    // ---------- BATTERY ----------
     async function updateBattery() {
       if (navigator.getBattery) {
         try {
@@ -482,14 +569,12 @@
           document.getElementById('batt').innerHTML = "🔋 ?%";
         }
       } else {
-        document.getElementById('batt').innerHTML = "🔋 98%";
+        document.getElementById('batt').innerHTML = "🔋 94%";
       }
     }
     updateBattery();
 
-    // ---------- INTENT HANDLERS (for Android app links) ----------
-    // For desktop icons and menu items that are <a> with intent: they'll work on Android.
-    // For custom Minecraft emoji (non-link) we need to trigger same intent manually.
+    // ---------- MINECRAFT INTENT ----------
     const minecraftDesktop = document.querySelector('[data-minecraft]');
     const minecraftMenuItem = document.querySelector('[data-minecraft-menu]');
     const minecraftIntent = "intent://#Intent;package=com.mojang.minecraftpe;end";
@@ -505,10 +590,7 @@
       launchMinecraft();
     });
 
-    // Also ensure all other .app-icon links are valid, and prevent default on missing href?
-    // All good.
-
-    // ---------- PWA INSTALL PROMPT (modern) ----------
+    // ---------- PWA INSTALL ----------
     let deferredPrompt = null;
     const installBanner = document.getElementById('installBanner');
     const installBtn = document.getElementById('installBtn');
@@ -517,7 +599,6 @@
     window.addEventListener('beforeinstallprompt', (e) => {
       e.preventDefault();
       deferredPrompt = e;
-      // show install banner
       installBanner.classList.remove('hide-install');
     });
 
@@ -525,12 +606,10 @@
       if (deferredPrompt) {
         deferredPrompt.prompt();
         const { outcome } = await deferredPrompt.userChoice;
-        console.log(`User response to install: ${outcome}`);
         deferredPrompt = null;
         installBanner.classList.add('hide-install');
       } else {
-        // fallback: maybe the app is already installed or browser not supporting
-        alert("Install prompt not available. You can add to home screen manually via browser menu.");
+        alert("Tap browser menu → Add to Home screen");
         installBanner.classList.add('hide-install');
       }
     });
@@ -538,42 +617,22 @@
       installBanner.classList.add('hide-install');
     });
 
-    // Also handle app installed event (optional)
     window.addEventListener('appinstalled', () => {
-      console.log('PWA installed');
       installBanner.classList.add('hide-install');
     });
 
-    // additional: prevent context menu on long press for cleaner UX
+    // Service Worker
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('./sw.js').catch(err => console.log('SW error:', err));
+    }
+    
+    // Prevent context menu
     document.querySelectorAll('.app-icon, .menu-item, .tb-btn').forEach(el => {
       el.addEventListener('contextmenu', (e) => e.preventDefault());
     });
     
-    // Fix for empty battery fallback display
-    if (!navigator.getBattery) {
-      document.getElementById('batt').innerHTML = "🔋 94%";
-    }
-
-    // Minecraft icon fix for desktop emoji — also ensure it looks consistent
-    // Ensure service worker registration
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('./sw.js').then(reg => {
-        console.log('SW registered:', reg);
-      }).catch(err => console.log('SW error:', err));
-    } else {
-      console.log("Service workers not supported");
-    }
-    
-    // Fix: touch and click propagation for start menu & wallpaper picker to avoid closing
     wpInput.addEventListener('click', (e) => e.stopPropagation());
-    
-    // Add a subtle animation when wallpaper changes
-    // Also apply default background opacity or style
     document.body.style.backgroundRepeat = "no-repeat";
-    
-    // Custom intent for any missing: maybe Instagram, FB etc already covered
-    // Ensure all 'a' tags with intent will work on android and gracefully on desktop? On desktop they will just do nothing (but fine)
-    // Add optional fallback for desktop to open web version? Not needed for launcher concept.
   })();
 </script>
 </body>

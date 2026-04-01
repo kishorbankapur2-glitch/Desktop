@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no, orientation=any">
   <title>Windows 11 Launcher</title>
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#0a0a1a">
@@ -32,9 +32,9 @@
       bottom: 0;
     }
 
-    /* Desktop grid - responsive for landscape */
+    /* Desktop grid - responsive for all orientations */
     #desktop {
-      height: calc(100vh - 70px);
+      height: 100%;
       width: 100%;
       display: flex;
       flex-direction: row;
@@ -45,51 +45,93 @@
       overflow-y: auto;
       overflow-x: hidden;
       scrollbar-width: thin;
+      padding-bottom: 80px;
     }
 
-    /* Landscape optimization */
+    /* Portrait mode */
+    @media (orientation: portrait) {
+      #desktop {
+        padding: 20px 15px;
+        gap: 10px;
+      }
+      .app-icon {
+        width: 85px;
+        height: 100px;
+      }
+      .menu-grid {
+        grid-template-columns: repeat(4, 1fr);
+      }
+    }
+
+    /* Landscape mode - full support */
     @media (orientation: landscape) {
       #desktop {
         padding: 15px 25px;
         gap: 15px;
+        padding-bottom: 70px;
       }
       .app-icon {
-        width: 85px;
-        height: 95px;
+        width: 90px;
+        height: 100px;
       }
       .app-icon img {
-        width: 44px;
-        height: 44px;
+        width: 48px;
+        height: 48px;
       }
       .emoji-icon {
-        font-size: 38px;
+        font-size: 42px;
       }
       #start-menu {
-        max-width: 650px;
-        height: 480px;
-        bottom: -600px;
+        max-width: 700px;
+        height: 450px;
+        bottom: -550px;
       }
       #start-menu.active {
         bottom: 75px;
       }
       .menu-grid {
         grid-template-columns: repeat(5, 1fr);
-        max-height: 340px;
+        max-height: 310px;
       }
       #taskbar {
-        max-width: 85%;
+        max-width: 90%;
         height: 52px;
       }
     }
 
-    /* Tablet and larger screens */
+    /* Small landscape devices */
+    @media (orientation: landscape) and (max-height: 450px) {
+      #start-menu {
+        height: 350px;
+        bottom: -450px;
+      }
+      #start-menu.active {
+        bottom: 65px;
+      }
+      .menu-grid {
+        max-height: 230px;
+      }
+      .app-icon {
+        width: 75px;
+        height: 85px;
+      }
+      .app-icon img {
+        width: 40px;
+        height: 40px;
+      }
+    }
+
+    /* Tablet landscape */
     @media (min-width: 768px) and (orientation: landscape) {
       .app-icon {
-        width: 100px;
-        height: 110px;
+        width: 105px;
+        height: 115px;
       }
       .menu-grid {
         grid-template-columns: repeat(6, 1fr);
+      }
+      #taskbar {
+        max-width: 70%;
       }
     }
 
@@ -103,8 +145,6 @@
     }
 
     .app-icon {
-      width: 90px;
-      height: 105px;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -139,7 +179,7 @@
       margin-bottom: 8px;
     }
 
-    /* ----- START MENU ----- */
+    /* START MENU */
     #start-menu {
       position: fixed;
       bottom: -700px;
@@ -162,20 +202,6 @@
       bottom: 80px;
     }
 
-    /* Landscape start menu adjustment */
-    @media (orientation: landscape) and (max-height: 500px) {
-      #start-menu {
-        height: 380px;
-        bottom: -450px;
-      }
-      #start-menu.active {
-        bottom: 70px;
-      }
-      .menu-grid {
-        max-height: 260px;
-      }
-    }
-
     .search-box {
       width: 100%;
       padding: 12px 18px;
@@ -196,7 +222,6 @@
 
     .menu-grid {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
       gap: 14px;
       overflow-y: auto;
       max-height: 380px;
@@ -260,14 +285,6 @@
       border: 1px solid rgba(255,255,255,0.2);
       pointer-events: auto;
     }
-    
-    @media (orientation: landscape) {
-      #taskbar {
-        width: 90%;
-        max-width: 700px;
-        height: 52px;
-      }
-    }
 
     .tb-btn {
       width: 46px;
@@ -320,12 +337,6 @@
       pointer-events: auto;
       white-space: nowrap;
       font-family: inherit;
-    }
-    
-    @media (orientation: landscape) {
-      .install-prompt {
-        bottom: 80px;
-      }
     }
     
     .install-prompt button {

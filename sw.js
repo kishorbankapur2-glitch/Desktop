@@ -1,10 +1,10 @@
-const CACHE_NAME = "win11-launcher-v1";
+const CACHE_NAME = "win11-v2";
 
 const urlsToCache = [
-  "./",
-  "./index.html",
-  "./manifest.json",
-  "./desktop.png"
+  "/Desktop/",
+  "/Desktop/index.html",
+  "/Desktop/manifest.json",
+  "/Desktop/desktop.png"
 ];
 
 self.addEventListener("install", event => {
@@ -13,11 +13,7 @@ event.waitUntil(
 
 caches.open(CACHE_NAME)
 
-.then(cache => {
-
-return cache.addAll(urlsToCache);
-
-})
+.then(cache => cache.addAll(urlsToCache))
 
 );
 

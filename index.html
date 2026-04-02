@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <title>Windows 11 Launcher</title>
+  <title>Win11 Launcher · Pin Apps (Long Press)</title>
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#0a0a1a">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -25,20 +25,22 @@
       background: #0a0a1a;
     }
 
+    /* HOME SCREEN: STRAIGHT HORIZONTAL ROW (flex row, no wrap, scrollable) */
     #desktop {
       height: calc(100vh - 70px);
       display: flex;
-      flex-direction: column;
-      flex-wrap: wrap;
-      padding: 20px 18px;
-      gap: 12px;
-      align-content: flex-start;
-      overflow-y: auto;
+      flex-direction: row;
+      overflow-x: auto;
+      overflow-y: hidden;
+      gap: 20px;
+      padding: 25px 24px;
+      align-items: center;
       scrollbar-width: thin;
+      white-space: nowrap;
     }
 
     #desktop::-webkit-scrollbar {
-      width: 5px;
+      height: 5px;
       background: transparent;
     }
     #desktop::-webkit-scrollbar-thumb {
@@ -46,58 +48,95 @@
       border-radius: 10px;
     }
 
-    .app-icon {
-      width: 90px;
-      height: 105px;
+    /* Home app icon style */
+    .home-icon {
+      flex-shrink: 0;
+      width: 100px;
+      height: 115px;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       text-decoration: none;
       color: white;
-      font-size: 12px;
-      border-radius: 12px;
+      font-size: 13px;
+      font-weight: 500;
+      border-radius: 20px;
       cursor: pointer;
       text-shadow: 1px 1px 3px rgba(0,0,0,0.6);
       transition: all 0.2s ease;
       background: transparent;
       border: none;
+      position: relative;
+      padding: 12px 6px;
     }
 
-    .app-icon:hover {
+    .home-icon:hover {
       background: rgba(255,255,255,0.2);
-      backdrop-filter: blur(10px);
+      backdrop-filter: blur(12px);
       transform: scale(1.02);
     }
 
-    .app-icon img {
-      width: 48px;
-      height: 48px;
-      margin-bottom: 8px;
+    .home-icon img {
+      width: 58px;
+      height: 58px;
+      margin-bottom: 10px;
+      filter: drop-shadow(0 2px 5px rgba(0,0,0,0.3));
+      border-radius: 18px;
+      object-fit: cover;
+    }
+
+    .home-emoji {
+      font-size: 54px;
+      margin-bottom: 10px;
       filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
     }
 
-    .emoji-icon {
-      font-size: 42px;
-      margin-bottom: 8px;
+    /* Remove button on pinned home apps */
+    .unpin-home {
+      position: absolute;
+      top: -8px;
+      right: -8px;
+      background: rgba(220, 20, 60, 0.9);
+      color: white;
+      border-radius: 50%;
+      width: 24px;
+      height: 24px;
+      font-size: 14px;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      opacity: 0;
+      transition: 0.1s;
+      backdrop-filter: blur(2px);
+      border: 1px solid white;
+      z-index: 10;
+    }
+    .home-icon:hover .unpin-home {
+      opacity: 1;
     }
 
+    /* START MENU - all apps (chat + others) with long-press to pin */
     #start-menu {
       position: fixed;
       bottom: -700px;
       left: 50%;
       transform: translateX(-50%);
       width: 92%;
-      max-width: 540px;
-      height: 520px;
-      background: rgba(245, 245, 245, 0.96);
+      max-width: 560px;
+      height: 580px;
+      background: rgba(245, 245, 245, 0.98);
       backdrop-filter: blur(32px);
-      border-radius: 24px;
-      padding: 20px 18px;
+      border-radius: 28px;
+      padding: 20px 16px;
       transition: bottom 0.35s cubic-bezier(0.2, 0.9, 0.4, 1.1);
       z-index: 10000;
       box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255,255,255,0.2);
       border: 1px solid rgba(255,255,255,0.4);
+      display: flex;
+      flex-direction: column;
     }
 
     #start-menu.active {
@@ -111,7 +150,7 @@
       border: none;
       background: rgba(0,0,0,0.05);
       backdrop-filter: blur(4px);
-      margin-bottom: 20px;
+      margin-bottom: 16px;
       outline: none;
       font-size: 15px;
       font-weight: 500;
@@ -121,12 +160,13 @@
       box-shadow: 0 0 0 2px #0078d4;
     }
 
+    /* Menu grid: 4 columns portrait */
     .menu-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      gap: 14px;
+      gap: 12px;
       overflow-y: auto;
-      max-height: 380px;
+      flex: 1;
       padding-right: 5px;
     }
     .menu-grid::-webkit-scrollbar {
@@ -140,25 +180,54 @@
       font-size: 11px;
       text-decoration: none;
       color: #1e1e1e;
-      padding: 10px 6px;
+      padding: 10px 4px;
       border-radius: 14px;
       cursor: pointer;
       transition: 0.15s;
       background: transparent;
       font-weight: 500;
+      text-align: center;
+      word-break: break-word;
+      position: relative;
     }
     .menu-item:hover {
       background: rgba(0, 0, 0, 0.08);
       backdrop-filter: blur(2px);
     }
     .menu-item img {
-      width: 38px;
-      height: 38px;
+      width: 44px;
+      height: 44px;
       margin-bottom: 6px;
+      border-radius: 14px;
+      object-fit: cover;
     }
     .menu-emoji {
-      font-size: 34px;
+      font-size: 38px;
       margin-bottom: 5px;
+    }
+
+    /* Long press toast */
+    .toast-msg {
+      position: fixed;
+      bottom: 100px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #1e1e2fe6;
+      backdrop-filter: blur(20px);
+      color: white;
+      padding: 8px 20px;
+      border-radius: 40px;
+      font-size: 13px;
+      z-index: 10003;
+      pointer-events: none;
+      white-space: nowrap;
+      font-weight: 500;
+      border: 1px solid rgba(255,255,255,0.3);
+    }
+
+    .add-app-card {
+      background: rgba(0, 120, 212, 0.12);
+      border: 1.5px dashed #0078d4;
     }
 
     #taskbar-container {
@@ -250,14 +319,18 @@
     .hide-install {
       display: none;
     }
-    
-    @media (max-width: 500px) {
-      .menu-grid {
-        grid-template-columns: repeat(3, 1fr);
-        gap: 10px;
+
+    @media (max-width: 550px) {
+      .home-icon {
+        width: 85px;
+        height: 100px;
       }
-      #desktop {
-        gap: 8px;
+      .home-icon img {
+        width: 50px;
+        height: 50px;
+      }
+      .home-emoji {
+        font-size: 46px;
       }
     }
   </style>
@@ -265,95 +338,13 @@
 <body>
 
 <div id="desktop">
-  <div class="app-icon" data-package="com.android.chrome">
-    <img src="https://cdn-icons-png.flaticon.com/512/888/888846.png" alt="Chrome">
-    <span>Chrome</span>
-  </div>
-  <div class="app-icon" data-package="com.whatsapp">
-    <img src="https://cdn-icons-png.flaticon.com/512/733/733585.png" alt="WhatsApp">
-    <span>WhatsApp</span>
-  </div>
-  <div class="app-icon" data-package="com.google.android.youtube">
-    <img src="https://cdn-icons-png.flaticon.com/512/1384/1384060.png" alt="YouTube">
-    <span>YouTube</span>
-  </div>
-  <div class="app-icon" data-package="com.mojang.minecraftpe">
-    <div class="emoji-icon">⛏️</div>
-    <span>Minecraft</span>
-  </div>
-  <div class="app-icon" data-package="com.instagram.android">
-    <img src="https://cdn-icons-png.flaticon.com/512/2111/2111463.png" alt="Instagram">
-    <span>Instagram</span>
-  </div>
-  <div class="app-icon" data-package="com.facebook.katana">
-    <img src="https://cdn-icons-png.flaticon.com/512/733/733547.png" alt="Facebook">
-    <span>Facebook</span>
-  </div>
-  <div class="app-icon" data-package="org.telegram.messenger">
-    <img src="https://cdn-icons-png.flaticon.com/512/2111/2111646.png" alt="Telegram">
-    <span>Telegram</span>
-  </div>
-  <div class="app-icon" data-package="com.google.android.gm">
-    <img src="https://cdn-icons-png.flaticon.com/512/732/732200.png" alt="Gmail">
-    <span>Gmail</span>
-  </div>
+  <!-- Pinned apps will appear here in horizontal row -->
 </div>
 
 <div id="start-menu">
-  <input type="text" class="search-box" placeholder="Search apps...">
-  <div class="menu-grid">
-    <div class="menu-item" data-package="com.whatsapp">
-      <img src="https://cdn-icons-png.flaticon.com/512/733/733585.png">
-      <span>WhatsApp</span>
-    </div>
-    <div class="menu-item" data-package="com.instagram.android">
-      <img src="https://cdn-icons-png.flaticon.com/512/2111/2111463.png">
-      <span>Instagram</span>
-    </div>
-    <div class="menu-item" data-package="com.facebook.katana">
-      <img src="https://cdn-icons-png.flaticon.com/512/733/733547.png">
-      <span>Facebook</span>
-    </div>
-    <div class="menu-item" data-package="org.telegram.messenger">
-      <img src="https://cdn-icons-png.flaticon.com/512/2111/2111646.png">
-      <span>Telegram</span>
-    </div>
-    <div class="menu-item" data-package="com.android.chrome">
-      <img src="https://cdn-icons-png.flaticon.com/512/888/888846.png">
-      <span>Chrome</span>
-    </div>
-    <div class="menu-item" data-package="com.google.android.youtube">
-      <img src="https://cdn-icons-png.flaticon.com/512/1384/1384060.png">
-      <span>YouTube</span>
-    </div>
-    <div class="menu-item" data-package="com.google.android.gm">
-      <img src="https://cdn-icons-png.flaticon.com/512/732/732200.png">
-      <span>Gmail</span>
-    </div>
-    <div class="menu-item" data-package="com.google.android.apps.maps">
-      <img src="https://cdn-icons-png.flaticon.com/512/684/684908.png">
-      <span>Maps</span>
-    </div>
-    <div class="menu-item" data-package="com.google.android.apps.photos">
-      <img src="https://cdn-icons-png.flaticon.com/512/685/685686.png">
-      <span>Photos</span>
-    </div>
-    <div class="menu-item" data-package="com.google.android.calculator">
-      <img src="https://cdn-icons-png.flaticon.com/512/2851/2851273.png">
-      <span>Calculator</span>
-    </div>
-    <div class="menu-item" data-package="com.google.android.deskclock">
-      <img src="https://cdn-icons-png.flaticon.com/512/2972/2972531.png">
-      <span>Clock</span>
-    </div>
-    <div class="menu-item" data-package="com.mojang.minecraftpe">
-      <div class="menu-emoji">⛏️</div>
-      <span>Minecraft</span>
-    </div>
-    <div class="menu-item" id="wallpaper-menu-btn">
-      <img src="https://cdn-icons-png.flaticon.com/512/685/685655.png">
-      <span>Wallpaper</span>
-    </div>
+  <input type="text" class="search-box" placeholder="🔍 Search all apps...">
+  <div class="menu-grid" id="allAppsGrid">
+    <div style="text-align:center; padding:20px;">✨ Loading apps...</div>
   </div>
 </div>
 
@@ -379,83 +370,407 @@
 
 <script>
   (function() {
-    // Function to launch Android apps using intent:// scheme
-    function launchApp(packageName) {
+    // ---------- ALL APPS (including CHAT apps: WhatsApp, Telegram, Instagram, FB Messenger) ----------
+    const ALL_AVAILABLE_APPS = [
+      { package: "com.whatsapp", name: "WhatsApp", icon: "https://cdn-icons-png.flaticon.com/512/733/733585.png", isEmoji: false, category: "chat" },
+      { package: "org.telegram.messenger", name: "Telegram", icon: "https://cdn-icons-png.flaticon.com/512/2111/2111646.png", isEmoji: false, category: "chat" },
+      { package: "com.instagram.android", name: "Instagram", icon: "https://cdn-icons-png.flaticon.com/512/2111/2111463.png", isEmoji: false, category: "chat" },
+      { package: "com.facebook.katana", name: "Facebook", icon: "https://cdn-icons-png.flaticon.com/512/733/733547.png", isEmoji: false, category: "social" },
+      { package: "com.android.chrome", name: "Chrome", icon: "https://cdn-icons-png.flaticon.com/512/888/888846.png", isEmoji: false },
+      { package: "com.google.android.youtube", name: "YouTube", icon: "https://cdn-icons-png.flaticon.com/512/1384/1384060.png", isEmoji: false },
+      { package: "com.google.android.gm", name: "Gmail", icon: "https://cdn-icons-png.flaticon.com/512/732/732200.png", isEmoji: false },
+      { package: "com.google.android.apps.maps", name: "Maps", icon: "https://cdn-icons-png.flaticon.com/512/684/684908.png", isEmoji: false },
+      { package: "com.google.android.apps.photos", name: "Photos", icon: "https://cdn-icons-png.flaticon.com/512/685/685686.png", isEmoji: false },
+      { package: "com.google.android.calculator", name: "Calculator", icon: "🧮", isEmoji: true },
+      { package: "com.google.android.deskclock", name: "Clock", icon: "https://cdn-icons-png.flaticon.com/512/2972/2972531.png", isEmoji: false },
+      { package: "com.mojang.minecraftpe", name: "Minecraft", icon: "🪏", isEmoji: true }
+    ];
+
+    // User added apps
+    let userApps = [];
+    // Pinned apps on home screen (store package names)
+    let pinnedApps = [];
+
+    // Load data from localStorage
+    function loadData() {
+      try {
+        const storedPins = localStorage.getItem('win11_pinned_home');
+        if (storedPins) pinnedApps = JSON.parse(storedPins);
+        else pinnedApps = [];
+        
+        const storedUser = localStorage.getItem('win11_user_apps_list');
+        if (storedUser) userApps = JSON.parse(storedUser);
+        else userApps = [];
+      } catch(e) { pinnedApps = []; userApps = []; }
+    }
+
+    function savePinnedApps() {
+      localStorage.setItem('win11_pinned_home', JSON.stringify(pinnedApps));
+    }
+
+    function saveUserApps() {
+      localStorage.setItem('win11_user_apps_list', JSON.stringify(userApps));
+    }
+
+    // Get complete menu apps (ALL_AVAILABLE_APPS + userApps)
+    function getAllMenuApps() {
+      const map = new Map();
+      ALL_AVAILABLE_APPS.forEach(app => map.set(app.package, { ...app, isPreloaded: true }));
+      userApps.forEach(app => {
+        if (!map.has(app.package)) {
+          map.set(app.package, { ...app, isPreloaded: false });
+        }
+      });
+      return Array.from(map.values());
+    }
+
+    // Get app details by package
+    function getAppByPackage(packageName) {
+      const all = getAllMenuApps();
+      return all.find(app => app.package === packageName);
+    }
+
+    // Launch app
+    function launchApp(packageName, appName) {
       if (!packageName) return;
-      // Create intent URL for Android
+      const customSchemes = {
+        'com.whatsapp': 'whatsapp://',
+        'com.android.chrome': 'googlechrome://',
+        'com.google.android.youtube': 'vnd.youtube://',
+        'com.instagram.android': 'instagram://user?username=instagram',
+        'com.facebook.katana': 'fb://feed',
+        'org.telegram.messenger': 'tg://resolve?domain=telegram',
+        'com.google.android.gm': 'googlegmail://',
+        'com.google.android.apps.maps': 'google.navigation://',
+        'com.google.android.apps.photos': 'googlephotos://',
+        'com.mojang.minecraftpe': 'minecraft://'
+      };
+      
+      if (customSchemes[packageName]) {
+        window.location.href = customSchemes[packageName];
+        setTimeout(() => {
+          const intentUrl = `intent://#Intent;package=${packageName};scheme=${customSchemes[packageName].split(':')[0]};end`;
+          window.location.href = intentUrl;
+        }, 600);
+        return;
+      }
+      
       const intentUrl = `intent://#Intent;package=${packageName};end`;
       window.location.href = intentUrl;
       
-      // Fallback for non-Android or if app not installed
-      setTimeout(() => {
-        // If still on same page after 2 seconds, app probably not installed
-        console.log('App may not be installed:', packageName);
+      let fallbackTimer = setTimeout(() => {
+        const userWantsInstall = confirm(`"${appName || packageName}" app not installed.\n\nInstall from Play Store?`);
+        if (userWantsInstall) window.open(`https://play.google.com/store/apps/details?id=${packageName}`, '_blank');
       }, 2000);
+      window.addEventListener('blur', () => clearTimeout(fallbackTimer), { once: true });
     }
-    
-    // Add click handlers to all app icons
-    document.querySelectorAll('[data-package]').forEach(el => {
-      el.addEventListener('click', (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        const packageName = el.getAttribute('data-package');
-        if (packageName) {
-          launchApp(packageName);
-        }
-      });
-    });
-    
-    // Start Menu functionality
-    const startBtn = document.getElementById('start-btn');
-    const menuPanel = document.getElementById('start-menu');
-    
-    function closeMenu() { 
-      menuPanel.classList.remove('active'); 
-    }
-    
-    function toggleMenu(e) {
-      e.stopPropagation();
-      menuPanel.classList.toggle('active');
-    }
-    
-    startBtn.addEventListener('click', toggleMenu);
-    
-    document.addEventListener('click', function(event) {
-      if (!menuPanel.contains(event.target) && event.target !== startBtn && !startBtn.contains(event.target)) {
-        closeMenu();
+
+    // Render HOME screen (horizontal row of pinned apps)
+    function renderHomeScreen() {
+      const desktopDiv = document.getElementById('desktop');
+      if (!desktopDiv) return;
+      desktopDiv.innerHTML = '';
+      
+      if (pinnedApps.length === 0) {
+        const emptyMsg = document.createElement('div');
+        emptyMsg.style.color = 'white';
+        emptyMsg.style.textAlign = 'center';
+        emptyMsg.style.width = '100%';
+        emptyMsg.style.fontSize = '14px';
+        emptyMsg.style.textShadow = '1px 1px 2px black';
+        emptyMsg.innerText = '✨ Long press any app in Start Menu to pin here →';
+        desktopDiv.appendChild(emptyMsg);
+        return;
       }
-    });
-    
-    menuPanel.addEventListener('click', (e) => e.stopPropagation());
-    
-    // Search filter
-    const searchBox = document.querySelector('.search-box');
-    const menuItems = document.querySelectorAll('.menu-item');
-    searchBox.addEventListener('input', () => {
-      const val = searchBox.value.toLowerCase().trim();
-      menuItems.forEach(item => {
-        const text = item.innerText.toLowerCase();
-        if (text.includes(val)) {
-          item.style.display = "flex";
+      
+      pinnedApps.forEach(pkg => {
+        const app = getAppByPackage(pkg);
+        if (!app) return;
+        
+        const iconDiv = document.createElement('div');
+        iconDiv.className = 'home-icon';
+        iconDiv.setAttribute('data-package', app.package);
+        
+        if (app.isEmoji) {
+          const emojiSpan = document.createElement('div');
+          emojiSpan.className = 'home-emoji';
+          emojiSpan.innerText = app.icon;
+          iconDiv.appendChild(emojiSpan);
+        } else if (app.icon && app.icon.startsWith('http')) {
+          const img = document.createElement('img');
+          img.src = app.icon;
+          img.alt = app.name;
+          img.onerror = () => { img.src = 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png'; };
+          iconDiv.appendChild(img);
         } else {
-          item.style.display = "none";
+          const emoji = document.createElement('div');
+          emoji.className = 'home-emoji';
+          emoji.innerText = '📱';
+          iconDiv.appendChild(emoji);
         }
+        
+        const label = document.createElement('span');
+        label.innerText = app.name;
+        iconDiv.appendChild(label);
+        
+        // Unpin button
+        const unpinBtn = document.createElement('div');
+        unpinBtn.className = 'unpin-home';
+        unpinBtn.innerHTML = '✕';
+        unpinBtn.title = 'Remove from home';
+        unpinBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          pinnedApps = pinnedApps.filter(p => p !== app.package);
+          savePinnedApps();
+          renderHomeScreen();
+          renderAllAppsGrid(); // refresh menu (visual feedback)
+          showToast(`Removed ${app.name} from home`);
+        });
+        iconDiv.appendChild(unpinBtn);
+        
+        iconDiv.addEventListener('click', () => launchApp(app.package, app.name));
+        desktopDiv.appendChild(iconDiv);
       });
-    });
+    }
+
+    // Pin app to home (long press)
+    function pinAppToHome(packageName) {
+      if (pinnedApps.includes(packageName)) {
+        showToast(`⚠️ ${packageName.split('.').pop()} already on home`);
+        return;
+      }
+      pinnedApps.push(packageName);
+      savePinnedApps();
+      renderHomeScreen();
+      showToast(`✅ Pinned to home! Long press again to remove.`);
+    }
+
+    // Show temporary toast
+    let toastTimeout;
+    function showToast(msg) {
+      let toast = document.querySelector('.toast-msg');
+      if (!toast) {
+        toast = document.createElement('div');
+        toast.className = 'toast-msg';
+        document.body.appendChild(toast);
+      }
+      toast.innerText = msg;
+      toast.style.opacity = '1';
+      if (toastTimeout) clearTimeout(toastTimeout);
+      toastTimeout = setTimeout(() => {
+        toast.style.opacity = '0';
+      }, 1800);
+    }
+
+    // Render full menu grid (all apps + add button + wallpaper)
+    function renderAllAppsGrid() {
+      const grid = document.getElementById('allAppsGrid');
+      if (!grid) return;
+      const allApps = getAllMenuApps();
+      grid.innerHTML = '';
+      
+      allApps.forEach(app => {
+        const menuItem = document.createElement('div');
+        menuItem.className = 'menu-item';
+        menuItem.setAttribute('data-package', app.package);
+        
+        // Icon
+        if (app.isEmoji) {
+          const emojiSpan = document.createElement('div');
+          emojiSpan.className = 'menu-emoji';
+          emojiSpan.innerText = app.icon;
+          menuItem.appendChild(emojiSpan);
+        } else if (app.icon && app.icon.startsWith('http')) {
+          const img = document.createElement('img');
+          img.src = app.icon;
+          img.alt = app.name;
+          img.onerror = () => { img.src = 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png'; };
+          menuItem.appendChild(img);
+        } else {
+          const emojiSpan = document.createElement('div');
+          emojiSpan.className = 'menu-emoji';
+          emojiSpan.innerText = '📦';
+          menuItem.appendChild(emojiSpan);
+        }
+        
+        const nameSpan = document.createElement('span');
+        nameSpan.innerText = app.name;
+        menuItem.appendChild(nameSpan);
+        
+        // Pin indicator if already pinned
+        if (pinnedApps.includes(app.package)) {
+          const pinBadge = document.createElement('span');
+          pinBadge.innerText = '📌';
+          pinBadge.style.position = 'absolute';
+          pinBadge.style.bottom = '2px';
+          pinBadge.style.right = '6px';
+          pinBadge.style.fontSize = '10px';
+          pinBadge.style.opacity = '0.7';
+          menuItem.appendChild(pinBadge);
+        }
+        
+        // Single tap = launch
+        menuItem.addEventListener('click', (e) => {
+          e.stopPropagation();
+          launchApp(app.package, app.name);
+          closeMenu();
+        });
+        
+        // LONG PRESS = pin to home (or show options)
+        let pressTimer;
+        menuItem.addEventListener('touchstart', (e) => {
+          pressTimer = setTimeout(() => {
+            pinAppToHome(app.package);
+            // Haptic-like feedback
+            menuItem.style.background = 'rgba(0,120,212,0.2)';
+            setTimeout(() => { menuItem.style.background = ''; }, 200);
+          }, 500);
+        });
+        menuItem.addEventListener('touchend', () => { clearTimeout(pressTimer); });
+        menuItem.addEventListener('touchcancel', () => { clearTimeout(pressTimer); });
+        // For mouse (desktop) long press using mousedown + mouseup
+        let mouseTimer;
+        menuItem.addEventListener('mousedown', (e) => {
+          mouseTimer = setTimeout(() => {
+            pinAppToHome(app.package);
+            menuItem.style.background = 'rgba(0,120,212,0.2)';
+            setTimeout(() => { menuItem.style.background = ''; }, 200);
+          }, 500);
+        });
+        menuItem.addEventListener('mouseup', () => { clearTimeout(mouseTimer); });
+        menuItem.addEventListener('mouseleave', () => { clearTimeout(mouseTimer); });
+        
+        grid.appendChild(menuItem);
+      });
+      
+      // ADD NEW APP BUTTON
+      const addCard = document.createElement('div');
+      addCard.className = 'menu-item add-app-card';
+      const addEmoji = document.createElement('div');
+      addEmoji.className = 'menu-emoji';
+      addEmoji.innerText = '➕';
+      addCard.appendChild(addEmoji);
+      const addText = document.createElement('span');
+      addText.innerText = 'Add App';
+      addCard.appendChild(addText);
+      addCard.addEventListener('click', (e) => {
+        e.stopPropagation();
+        showAddAppDialog();
+      });
+      grid.appendChild(addCard);
+      
+      // Wallpaper button
+      injectWallpaperButton();
+    }
     
-    // Wallpaper functionality
-    const wallpaperBtn = document.getElementById('wallpaper-menu-btn');
-    const wpInput = document.getElementById('wp-input');
+    // Add custom app dialog
+    function showAddAppDialog() {
+      const pkg = prompt("📦 Enter Android package name:\n(e.g., com.truecaller, com.spotify.music)\n\nFind from Play Store URL");
+      if (!pkg || !pkg.trim()) return;
+      const name = prompt("🏷️ Display name:", pkg.split('.').pop());
+      if (!name || !name.trim()) return;
+      const iconInput = prompt("🎨 Icon (image URL or emoji):\n- Paste https://... image link\n- Or type a single emoji\nLeave empty for default", "");
+      
+      const existing = getAllMenuApps();
+      if (existing.some(a => a.package === pkg.trim())) {
+        alert("⚠️ App already exists!");
+        return;
+      }
+      
+      let isEmoji = false;
+      let finalIcon = null;
+      if (iconInput && iconInput.trim()) {
+        const trimmed = iconInput.trim();
+        if (/^\p{Emoji}$/u.test(trimmed) || (trimmed.length <= 2 && /[\u{1F300}-\u{1F6FF}]/u.test(trimmed))) {
+          isEmoji = true;
+          finalIcon = trimmed;
+        } else if (trimmed.startsWith('http')) {
+          finalIcon = trimmed;
+        }
+      }
+      
+      const newApp = {
+        package: pkg.trim(),
+        name: name.trim(),
+        icon: finalIcon,
+        isEmoji: isEmoji,
+        isPreloaded: false
+      };
+      userApps.push(newApp);
+      saveUserApps();
+      renderAllAppsGrid();
+      showToast(`✅ ${name} added to menu`);
+    }
     
-    if (wallpaperBtn) {
-      wallpaperBtn.addEventListener('click', (e) => {
-        e.preventDefault();
+    // Wallpaper button
+    function injectWallpaperButton() {
+      const grid = document.getElementById('allAppsGrid');
+      if (!grid) return;
+      if (document.getElementById('wallpaper-inject-item')) return;
+      const wallItem = document.createElement('div');
+      wallItem.id = 'wallpaper-inject-item';
+      wallItem.className = 'menu-item';
+      const wallEmoji = document.createElement('div');
+      wallEmoji.className = 'menu-emoji';
+      wallEmoji.innerText = '🖼️';
+      wallItem.appendChild(wallEmoji);
+      const wallText = document.createElement('span');
+      wallText.innerText = 'Wallpaper';
+      wallItem.appendChild(wallText);
+      wallItem.addEventListener('click', (e) => {
         e.stopPropagation();
         wpInput.click();
         closeMenu();
       });
+      grid.appendChild(wallItem);
     }
     
+    // Start menu logic
+    const startBtn = document.getElementById('start-btn');
+    const menuPanel = document.getElementById('start-menu');
+    function closeMenu() { menuPanel.classList.remove('active'); }
+    function toggleMenu(e) {
+      e.stopPropagation();
+      menuPanel.classList.toggle('active');
+      if (menuPanel.classList.contains('active')) {
+        renderAllAppsGrid();
+        const searchBox = document.querySelector('.search-box');
+        if (searchBox) searchBox.value = '';
+        filterApps();
+      }
+    }
+    startBtn.addEventListener('click', toggleMenu);
+    document.addEventListener('click', function(event) {
+      if (!menuPanel.contains(event.target) && event.target !== startBtn && !startBtn.contains(event.target)) closeMenu();
+    });
+    menuPanel.addEventListener('click', (e) => e.stopPropagation());
+    
+    const searchBox = document.querySelector('.search-box');
+    function filterApps() {
+      const val = searchBox.value.toLowerCase().trim();
+      const items = document.querySelectorAll('#allAppsGrid .menu-item');
+      items.forEach(item => {
+        const text = item.innerText.toLowerCase();
+        if (text.includes(val)) item.style.display = "flex";
+        else item.style.display = "none";
+      });
+    }
+    searchBox.addEventListener('input', filterApps);
+    
+    // Wallpaper
+    const wpInput = document.getElementById('wp-input');
+    const savedWallpaper = localStorage.getItem('win11-wallpaper');
+    if (savedWallpaper) {
+      document.body.style.backgroundImage = `url('${savedWallpaper}')`;
+      document.body.style.backgroundSize = "cover";
+      document.body.style.backgroundPosition = "center";
+      document.body.style.backgroundAttachment = "fixed";
+    } else {
+      document.body.style.backgroundImage = `url('https://images.unsplash.com/photo-1579373903781-fd5c0c30c4cd?q=80&w=1920&auto=format')`;
+      document.body.style.backgroundSize = "cover";
+      document.body.style.backgroundPosition = "center";
+      document.body.style.backgroundAttachment = "fixed";
+    }
     wpInput.addEventListener('change', function(e) {
       const file = e.target.files[0];
       if (file && file.type.startsWith('image/')) {
@@ -464,59 +779,29 @@
           const imgUrl = ev.target.result;
           localStorage.setItem('win11-wallpaper', imgUrl);
           document.body.style.backgroundImage = `url('${imgUrl}')`;
-          document.body.style.backgroundSize = "cover";
-          document.body.style.backgroundPosition = "center center";
-          document.body.style.backgroundAttachment = "fixed";
-          document.body.style.backgroundRepeat = "no-repeat";
         };
         reader.readAsDataURL(file);
       }
     });
     
-    // Load saved wallpaper
-    const savedWallpaper = localStorage.getItem('win11-wallpaper');
-    if (savedWallpaper) {
-      document.body.style.backgroundImage = `url('${savedWallpaper}')`;
-      document.body.style.backgroundSize = "cover";
-      document.body.style.backgroundPosition = "center";
-      document.body.style.backgroundAttachment = "fixed";
-      document.body.style.backgroundRepeat = "no-repeat";
-    } else {
-      document.body.style.backgroundImage = `url('https://images.unsplash.com/photo-1579373903781-fd5c0c30c4cd?q=80&w=1920&auto=format')`;
-      document.body.style.backgroundSize = "cover";
-      document.body.style.backgroundPosition = "center";
-      document.body.style.backgroundAttachment = "fixed";
-      document.body.style.backgroundRepeat = "no-repeat";
-    }
-    
-    // Clock
+    // Clock & Battery
     function updateClock() {
       const now = new Date();
-      const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-      document.getElementById('clock').innerText = timeStr;
+      document.getElementById('clock').innerText = now.toLocaleTimeString([], { hour: '2-digit', minute:'2-digit' });
     }
-    updateClock();
-    setInterval(updateClock, 1000);
-    
-    // Battery
+    updateClock(); setInterval(updateClock, 1000);
     async function updateBattery() {
       if (navigator.getBattery) {
         try {
           const battery = await navigator.getBattery();
-          function setBatteryLevel() {
+          const update = () => {
             const percent = Math.round(battery.level * 100);
-            const icon = percent > 20 ? "🔋" : "🪫";
-            document.getElementById('batt').innerHTML = `${icon} ${percent}%`;
-          }
-          setBatteryLevel();
-          battery.addEventListener('levelchange', setBatteryLevel);
-          battery.addEventListener('chargingchange', setBatteryLevel);
-        } catch(e) {
-          document.getElementById('batt').innerHTML = "🔋 ?%";
-        }
-      } else {
-        document.getElementById('batt').innerHTML = "🔋 98%";
-      }
+            document.getElementById('batt').innerHTML = `${percent > 20 ? '🔋' : '🪫'} ${percent}%`;
+          };
+          update();
+          battery.addEventListener('levelchange', update);
+        } catch(e) { document.getElementById('batt').innerHTML = "🔋 94%"; }
+      } else { document.getElementById('batt').innerHTML = "🔋 87%"; }
     }
     updateBattery();
     
@@ -525,68 +810,34 @@
     const installBanner = document.getElementById('installBanner');
     const installBtn = document.getElementById('installBtn');
     const dismissBtn = document.getElementById('dismissInstall');
-    
     window.addEventListener('beforeinstallprompt', (e) => {
       e.preventDefault();
       deferredPrompt = e;
       installBanner.classList.remove('hide-install');
     });
-    
     installBtn.addEventListener('click', async () => {
       if (deferredPrompt) {
         deferredPrompt.prompt();
         const { outcome } = await deferredPrompt.userChoice;
-        console.log(`User response to install: ${outcome}`);
         deferredPrompt = null;
         installBanner.classList.add('hide-install');
       } else {
-        alert("To install: Tap browser menu → 'Install app' or 'Add to Home screen'");
+        alert("Tap browser menu → 'Install app'");
         installBanner.classList.add('hide-install');
       }
     });
+    dismissBtn.addEventListener('click', () => installBanner.classList.add('hide-install'));
     
-    dismissBtn.addEventListener('click', () => {
-      installBanner.classList.add('hide-install');
-    });
+    // Initialize
+    loadData();
+    renderHomeScreen();
+    renderAllAppsGrid();
     
-    window.addEventListener('appinstalled', () => {
-      console.log('PWA installed');
-      installBanner.classList.add('hide-install');
-    });
-    
-    // Prevent context menu
-    document.querySelectorAll('.app-icon, .menu-item, .tb-btn').forEach(el => {
+    document.querySelectorAll('.home-icon, .menu-item, .tb-btn').forEach(el => {
       el.addEventListener('contextmenu', (e) => e.preventDefault());
     });
     
-    // Service Worker registration
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('./sw.js').then(reg => {
-        console.log('SW registered:', reg);
-      }).catch(err => console.log('SW error:', err));
-    }
-    
-    // Fix for wallpaper input
-    wpInput.addEventListener('click', (e) => e.stopPropagation());
-    
-    // Ensure background styling
-    document.body.style.backgroundRepeat = "no-repeat";
-    
-    // Add active state for better touch feedback
-    const allClickable = document.querySelectorAll('.app-icon, .menu-item, .tb-btn');
-    allClickable.forEach(el => {
-      el.addEventListener('touchstart', function() {
-        this.style.transform = 'scale(0.97)';
-      });
-      el.addEventListener('touchend', function() {
-        this.style.transform = '';
-      });
-      el.addEventListener('touchcancel', function() {
-        this.style.transform = '';
-      });
-    });
-    
-    console.log('Windows 11 Launcher ready!');
+    console.log("✅ Launcher ready | Horizontal home row | Long press any menu app to pin/unpin | Chat apps included");
   })();
 </script>
 </body>

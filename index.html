@@ -30,7 +30,7 @@
             --ease: cubic-bezier(0.16,1,0.3,1); --ease-spring: cubic-bezier(0.25,1,0.5,1.15);
             --marquee-fade: 18px; --marquee-gap: 34px;
 
-            <!-- ═══ SWAR UPGRADE BLOCK — paste right before </body> ═══ -->
+        <!-- ═══ SWAR UPGRADE BLOCK — paste right before </body> ═══ -->
 <style>
 /* Search list (works in both modes) */
 .sr-head{font-size:1.05rem;font-weight:800;letter-spacing:-.02em;margin:4px 0 12px}
@@ -49,6 +49,8 @@
 @media(min-width:900px){.sr-list{max-width:820px;margin:0 auto}}
 
 /* Apple-inspired glass mode */
+/* Mobile (portrait) only — tablet & desktop keep the original look */
+@media (max-width:768px){
 body.apple-ui{--glass-bg:rgba(60,60,67,.38);--glass-bg-strong:rgba(50,50,56,.55);--glass-border:rgba(255,255,255,.14);--glass-border-strong:rgba(255,255,255,.24);--bg-card:rgba(255,255,255,.08);--bg-card-hover:rgba(255,255,255,.14)}
 body.apple-ui .fullscreen-bg{inset:-5%;filter:blur(30px) saturate(1.5)}
 body.apple-ui .fullscreen-bg::before{background:rgba(0,0,0,.3)}
@@ -66,6 +68,7 @@ body.apple-ui .queue-panel{background:rgba(40,40,46,.7);-webkit-backdrop-filter:
 body.apple-ui .sr-row{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px)}
 body.apple-ui .sr-row:hover{background:rgba(255,255,255,.14)}
 body.apple-ui .sr-img{border-radius:10px}
+}
 </style>
 
 <script>
@@ -77,6 +80,7 @@ const body=document.body;
 function applyApple(on){body.classList.toggle('apple-ui',!!on);try{updateAtmosphericBackground()}catch{}}
 window.setAppleUI=function(on){Storage.set('swar_apple_ui',!!on);applyApple(on);showToast(on?'Apple-Inspired UI on':'Apple-Inspired UI off')};
 applyApple(Storage.get('swar_apple_ui'));
+addEventListener('resize',()=>{try{updateAtmosphericBackground()}catch{}});
 
 renderSettingsView=function(){
   $('sectionTitle').textContent='Settings';
@@ -99,7 +103,7 @@ renderSettingsView=function(){
 
 updateAtmosphericBackground=function(){
   const t=tracks[currentTrackIndex],bg=$('fullscreenBg');
-  if(body.classList.contains('apple-ui')&&t&&t.id) bg.style.background=`center/cover url(${getThumbnailFallback(t.id)})`;
+  if(body.classList.contains('apple-ui')&&innerWidth<=768&&t&&t.id) bg.style.background=`center/cover url(${getThumbnailFallback(t.id)})`;
   else bg.style.background='linear-gradient(180deg,#0f0f12 0%,#000 100%)';
 };
 
@@ -172,8 +176,7 @@ $('searchInput').addEventListener('input',e=>{
   timer=setTimeout(()=>runSearch(q),q.length<3?120:200);
 },true);
 })();
-</script>
-            
+</script>    
             /* ── Material System tokens ── */
             --surface-grain-url: none;
             --surface-grain-opacity: 0;
